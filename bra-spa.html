@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swan Ocean Language Quest - Portuguese & Spanish</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        swan: {
+                            50: '#f0f4f8',
+                            100: '#d9e2ec',
+                            200: '#bcccdc',
+                            300: '#9fb3c8',
+                            400: '#829ab1',
+                            500: '#627d98',
+                            600: '#486581',
+                            700: '#334e68',
+                            800: '#243b53',
+                            900: '#102a43',
+                        },
+                        ocean: {
+                            light: '#e0f2fe',
+                            DEFAULT: '#0284c7',
+                            dark: '#0369a1',
+                            deep: '#0c4a6e'
+                        },
+                        charcoal: '#1e293b'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .card-shadow {
+            box-shadow: 0 10px 30px -5px rgba(2, 132, 199, 0.15);
+        }
+        .pulse-subtle {
+            animation: pulseSubtle 3s infinite ease-in-out;
+        }
+        @keyframes pulseSubtle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+    </style>
+<style id="wsg-style">
+.wsg-nav{position:relative;z-index:100001;width:100%;box-sizing:border-box;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;
+ padding:8px 12px;background:#0b2447;color:#fff;font:600 13px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;letter-spacing:0}
+.wsg-nav .wsg-brand{font-weight:800;margin-right:4px;white-space:nowrap}
+.wsg-nav a{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 12px;border-radius:999px;text-decoration:none;color:#fff;
+ background:rgba(127,200,240,.16);border:1px solid rgba(127,200,240,.45);white-space:nowrap}
+.wsg-nav a:hover,.wsg-nav a:focus-visible{background:#18afba;border-color:#18afba;outline:none}
+.wsg-nav a[aria-current="page"]{background:#7fd9f0;color:#0b2447;border-color:#7fd9f0}
+.wsg-more{margin:18px 0 0;padding-top:14px;border-top:1px solid rgba(183,215,247,.35);text-align:center}
+.wsg-more p{margin:0 0 10px;font:700 12px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#b7d7f7}
+.wsg-more .wsg-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.wsg-more a{flex:1 1 150px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 10px;border-radius:14px;text-decoration:none;
+ background:rgba(24,105,186,.35);border:1px solid rgba(127,200,240,.5);color:#fff;font:700 15px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.wsg-more a small{font-weight:500;font-size:12px;color:#b7d7f7}
+.wsg-more a:hover,.wsg-more a:focus-visible{background:#18afba;outline:none}
+</style>
+</head>
+<body class="h-full bg-swan-50 text-charcoal font-sans antialiased flex flex-col justify-between selection:bg-ocean selection:text-white">
+<nav class="wsg-nav" aria-label="WebSwan Games"><span class="wsg-brand">🦢 WebSwan Games</span><a href="index.html"><span aria-hidden="true">🌤️</span>The WebSwan Sky Dream</a><a href="swan-game.html"><span aria-hidden="true">🧩</span>Swan Game</a><a href="bra-spa.html" aria-current="page"><span aria-hidden="true">🌊</span>The WebSwan Bra Spa</a></nav>
+
+    <header class="w-full bg-white border-b border-swan-200 py-4 px-6 shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-ocean text-white flex items-center justify-center font-bold text-xl shadow-md">
+                    🌊
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-swan-900" id="main-title">Swan Ocean Portuguese Quest</h1>
+                    <p class="text-xs text-swan-600" id="main-subtitle">Learn 100+ Essential Brazilian Portuguese Words & Sentences</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <!-- Language Toggle Button -->
+                <button onclick="toggleLanguage()" id="lang-toggle-btn" class="bg-ocean text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm hover:bg-ocean-dark transition-all flex items-center gap-1.5">
+                    🇪🇸 Switch to Spanish Mode
+                </button>
+                <div class="bg-swan-100 px-4 py-2 rounded-full text-sm font-medium text-swan-800 flex items-center gap-2">
+                    <span>Score:</span>
+                    <span id="score-display" class="font-bold text-ocean">0</span>
+                </div>
+                <div class="bg-swan-100 px-4 py-2 rounded-full text-sm font-medium text-swan-800 flex items-center gap-2">
+                    <span>Streak:</span>
+                    <span id="streak-display" class="font-bold text-ocean">0 🔥</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-8 flex flex-col justify-center items-center">
+        
+        <!-- Category Selection Screen -->
+        <div id="category-screen" class="w-full bg-white rounded-3xl p-8 card-shadow border border-swan-200 text-center">
+            <h2 id="cat-screen-title" class="text-2xl font-bold text-swan-900 mb-2">Choose Your Learning Category</h2>
+            <p id="cat-screen-desc" class="text-swan-600 mb-8 max-w-md mx-auto">Select a category below or play with all items shuffled together for the ultimate Blue Ocean challenge.</p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <button onclick="startGame('objects')" class="p-6 rounded-2xl bg-swan-50 hover:bg-ocean-light border border-swan-200 hover:border-ocean transition-all group text-left">
+                    <div class="text-3xl mb-3">☕</div>
+                    <h3 id="cat-obj-title" class="font-bold text-swan-900 group-hover:text-ocean-dark">Popular Objects</h3>
+                    <p id="cat-obj-desc" class="text-xs text-swan-600 mt-1">Coffee, cup, car, book, phone, pen, etc.</p>
+                </button>
+
+                <button onclick="startGame('actions')" class="p-6 rounded-2xl bg-swan-50 hover:bg-ocean-light border border-swan-200 hover:border-ocean transition-all group text-left">
+                    <div class="text-3xl mb-3">💃</div>
+                    <h3 id="cat-act-title" class="font-bold text-swan-900 group-hover:text-ocean-dark">Actions & Verbs</h3>
+                    <p id="cat-act-desc" class="text-xs text-swan-600 mt-1">Walking, singing, dancing, eating, sleeping, etc.</p>
+                </button>
+
+                <button onclick="startGame('places')" class="p-6 rounded-2xl bg-swan-50 hover:bg-ocean-light border border-swan-200 hover:border-ocean transition-all group text-left">
+                    <div class="text-3xl mb-3">🏖️</div>
+                    <h3 id="cat-pla-title" class="font-bold text-swan-900 group-hover:text-ocean-dark">Places & Rooms</h3>
+                    <p id="cat-pla-desc" class="text-xs text-swan-600 mt-1">Beach, restaurant, kitchen, bedroom, street, etc.</p>
+                </button>
+
+                <button onclick="startGame('careers')" class="p-6 rounded-2xl bg-swan-50 hover:bg-ocean-light border border-swan-200 hover:border-ocean transition-all group text-left">
+                    <div class="text-3xl mb-3">💼</div>
+                    <h3 id="cat-car-title" class="font-bold text-swan-900 group-hover:text-ocean-dark">Careers & Industries</h3>
+                    <p id="cat-car-desc" class="text-xs text-swan-600 mt-1">Plumber, electrician, doctor, lawyer, developer, etc.</p>
+                </button>
+            </div>
+
+            <button onclick="startGame('all')" id="play-all-btn" class="w-full py-4 rounded-2xl bg-ocean hover:bg-ocean-dark text-white font-semibold shadow-lg transition-all text-lg tracking-wide">
+                ✨ Play All Shuffled Words & Sentences
+            </button>
+        </div>
+
+        <!-- Game Play Screen (Hidden by default) -->
+        <div id="game-screen" class="w-full bg-white rounded-3xl p-8 card-shadow border border-swan-200 hidden flex flex-col items-center">
+            
+            <!-- Prompt / Target Question -->
+            <div class="w-full flex justify-between items-center mb-6 border-b border-swan-100 pb-4">
+                <button onclick="returnToMenu()" id="back-menu-btn" class="text-xs font-semibold uppercase tracking-wider text-swan-600 hover:text-ocean flex items-center gap-1">
+                    ← Back to Categories
+                </button>
+                <div id="category-badge" class="px-3 py-1 bg-swan-100 text-swan-800 rounded-full text-xs font-semibold uppercase tracking-wider">
+                    Objects
+                </div>
+            </div>
+
+            <div class="text-center mb-8">
+                <span id="prompt-label" class="text-xs font-semibold uppercase tracking-widest text-swan-500 block mb-1">Find the picture for:</span>
+                <h2 id="target-phrase-pt" class="text-3xl sm:text-4xl font-extrabold text-swan-900 mb-2">Uma xícara de café</h2>
+                
+                <!-- Translation hidden by default to prevent cheating! Revealed only upon miss or hint -->
+                <div id="translation-container" class="hidden mb-3 p-2 bg-ocean-light rounded-xl border border-ocean/30 inline-block">
+                    <p class="text-xs text-ocean-deep font-medium" id="target-phrase-en">Translation: "A cup of coffee"</p>
+                </div>
+
+                <div>
+                    <button onclick="speakWord()" class="mt-2 px-4 py-1.5 rounded-full bg-swan-100 hover:bg-ocean hover:text-white text-swan-800 text-xs font-medium transition-all inline-flex items-center gap-1.5 shadow-sm">
+                        🔊 Listen Pronunciation
+                    </button>
+                </div>
+            </div>
+
+            <!-- Image Choices Grid -->
+            <div id="choices-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full mb-8">
+                <!-- Dynamically injected choices -->
+            </div>
+
+            <!-- Feedback banner -->
+            <div id="feedback-box" class="w-full py-3 px-6 rounded-2xl text-center font-medium text-sm hidden transition-all">
+                <!-- Feedback text here -->
+            </div>
+
+            <div class="flex justify-end w-full mt-4">
+                <button id="next-btn" onclick="nextQuestion()" class="hidden px-6 py-3 rounded-2xl bg-ocean hover:bg-ocean-dark text-white font-semibold shadow-md transition-all">
+                    Next Question →
+                </button>
+            </div>
+        </div>
+
+        <!-- Completion Modal Screen -->
+        <div id="completion-screen" class="w-full bg-white rounded-3xl p-8 card-shadow border border-swan-200 hidden text-center">
+            <div class="text-5xl mb-4">🏆</div>
+            <h2 id="comp-title" class="text-3xl font-bold text-swan-900 mb-2">Parabéns! (Congratulations!)</h2>
+            <p id="comp-desc" class="text-swan-600 mb-6">You successfully completed this round of vocabulary quest in Blue Ocean style.</p>
+            <div class="bg-swan-50 p-6 rounded-2xl max-w-sm mx-auto mb-8 border border-swan-200">
+                <p id="comp-score-label" class="text-sm text-swan-700 mb-1">Final Score</p>
+                <p id="final-score" class="text-4xl font-extrabold text-ocean">0</p>
+            </div>
+            <button onclick="returnToMenu()" id="play-again-btn" class="px-8 py-4 rounded-2xl bg-ocean hover:bg-ocean-dark text-white font-semibold shadow-lg transition-all text-lg">
+                Play Again
+            </button>
+        </div>
+
+    </main>
+
+    <footer id="footer-text" class="w-full py-4 text-center text-xs text-swan-600 border-t border-swan-200 bg-white">
+        Designed with Swan Blue Ocean elegance &bull; Brazilian Portuguese & Spanish Learning Experience
+    </footer>
+
+    <script>
+        let currentLanguage = 'pt'; // 'pt' for Brazilian Portuguese, 'es' for Spanish
+
+        // Vocabulary Datasets for both Brazilian Portuguese & Spanish
+        const vocabularyDataPT = [
+            // Objects
+            { pt: "Uma xícara de café", en: "A cup of coffee", category: "objects", emoji: "☕" },
+            { pt: "Um carro", en: "A car", category: "objects", emoji: "🚗" },
+            { pt: "Um trem", en: "A train", category: "objects", emoji: "🚆" },
+            { pt: "Uma casa", en: "A house", category: "objects", emoji: "🏠" },
+            { pt: "Um garfo", en: "A fork", category: "objects", emoji: "🍴" },
+            { pt: "Uma faca", en: "A knife", category: "objects", emoji: "🔪" },
+            { pt: "Uma colher", en: "A spoon", category: "objects", emoji: "🥄" },
+            { pt: "Uma porta", en: "A door", category: "objects", emoji: "🚪" },
+            { pt: "Um armário", en: "A closet / wardrobe", category: "objects", emoji: "🚪" },
+            { pt: "Uma bolsa", en: "A bag / purse", category: "objects", emoji: "👜" },
+            { pt: "Uma loja", en: "A store", category: "objects", emoji: "🏬" },
+            { pt: "Um hotel", en: "A hotel", category: "objects", emoji: "🏨" },
+            { pt: "Um prédio", en: "A building", category: "objects", emoji: "🏢" },
+            { pt: "Um livro", en: "A book", category: "objects", emoji: "📖" },
+            { pt: "Um lápis", en: "A pencil", category: "objects", emoji: "✏️" },
+            { pt: "Uma caneta", en: "A pen", category: "objects", emoji: "🖊️" },
+            { pt: "Uma garrafa", en: "A bottle", category: "objects", emoji: "🍾" },
+            { pt: "Um anel", en: "A ring", category: "objects", emoji: "💍" },
+            { pt: "Um telefone", en: "A phone", category: "objects", emoji: "☎️" },
+            { pt: "Um celular", en: "A cell phone", category: "objects", emoji: "📱" },
+            { pt: "Um computador", en: "A computer", category: "objects", emoji: "💻" },
+            { pt: "Uma mesa", en: "A table", category: "objects", emoji: "🪑" },
+            { pt: "Uma cadeira", en: "A chair", category: "objects", emoji: "🪑" },
+            { pt: "Uma janela", en: "A window", category: "objects", emoji: "🪟" },
+            { pt: "Uma cama", en: "A bed", category: "objects", emoji: "🛏️" },
+            { pt: "Uma televisão", en: "A television", category: "objects", emoji: "📺" },
+            { pt: "Um relógio", en: "A watch / clock", category: "objects", emoji: "⌚" },
+            { pt: "Uma chave", en: "A key", category: "objects", emoji: "🔑" },
+            { pt: "Uma carteira", en: "A wallet", category: "objects", emoji: "👛" },
+            { pt: "Um óculos", en: "Glasses", category: "objects", emoji: "👓" },
+            { pt: "Um guarda-chuva", en: "An umbrella", category: "objects", emoji: "☂️" },
+            { pt: "Uma bicicleta", en: "A bicycle", category: "objects", emoji: "🚲" },
+            { pt: "Um avião", en: "An airplane", category: "objects", emoji: "✈️" },
+            { pt: "Um barco", en: "A boat", category: "objects", emoji: "⛵" },
+            { pt: "Uma flor", en: "A flower", category: "objects", emoji: "🌷" },
+            { pt: "Uma planta", en: "A plant", category: "objects", emoji: "🪴" },
+            { pt: "Um espelho", en: "A mirror", category: "objects", emoji: "🪞" },
+            { pt: "Uma escova", en: "A brush", category: "objects", emoji: "🖌️" },
+            { pt: "Um sabonete", en: "Soap", category: "objects", emoji: "🧼" },
+            { pt: "Uma toalha", en: "A towel", category: "objects", emoji: "🧺" },
+            { pt: "Um chapéu", en: "A hat", category: "objects", emoji: "👒" },
+            { pt: "Uma camisa", en: "A shirt", category: "objects", emoji: "👕" },
+            { pt: "Uma calça", en: "Pants", category: "objects", emoji: "👖" },
+            { pt: "Um sapato", en: "A shoe", category: "objects", emoji: "👞" },
+            { pt: "Uma meia", en: "A sock", category: "objects", emoji: "🧦" },
+            { pt: "Um prato", en: "A plate", category: "objects", emoji: "🍽️" },
+            { pt: "Um copo", en: "A glass / cup", category: "objects", emoji: "🥛" },
+            { pt: "Uma panela", en: "A pan / pot", category: "objects", emoji: "🍲" },
+            { pt: "Um fogão", en: "A stove", category: "objects", emoji: "🔥" },
+            { pt: "Uma geladeira", en: "A refrigerator", category: "objects", emoji: "🧊" },
+            { pt: "Uma lâmpada", en: "A lamp / lightbulb", category: "objects", emoji: "💡" },
+            { pt: "Um quadro", en: "A painting / picture frame", category: "objects", emoji: "🖼️" },
+            { pt: "Uma guitarra", en: "A guitar", category: "objects", emoji: "🎸" },
+            { pt: "Um violão", en: "An acoustic guitar", category: "objects", emoji: "🎸" },
+            { pt: "Uma bola", en: "A ball", category: "objects", emoji: "⚽" },
+            { pt: "Uma mala", en: "A suitcase", category: "objects", emoji: "🧳" },
+            { pt: "Um jornal", en: "A newspaper", category: "objects", emoji: "📰" },
+            { pt: "Uma revista", en: "A magazine", category: "objects", emoji: "🗞️" },
+            { pt: "Uma carta", en: "A letter", category: "objects", emoji: "✉️" },
+
+            // Actions
+            { pt: "Andando na rua", en: "Walking on the street", category: "actions", emoji: "🚶" },
+            { pt: "Cantando uma música", en: "Singing a song", category: "actions", emoji: "🎤" },
+            { pt: "Dançando samba", en: "Dancing samba", category: "actions", emoji: "💃" },
+            { pt: "Comendo no restaurante", en: "Eating at the restaurant", category: "actions", emoji: "🍲" },
+            { pt: "Dormindo na cama", en: "Sleeping in bed", category: "actions", emoji: "😴" },
+            { pt: "Chorando muito", en: "Crying a lot", category: "actions", emoji: "😢" },
+            { pt: "Trabalhando no escritório", en: "Working at the office", category: "actions", emoji: "💻" },
+            { pt: "Assistindo televisão", en: "Watching television", category: "actions", emoji: "📺" },
+            { pt: "Fazendo uma ligação", en: "Making a phone call", category: "actions", emoji: "📞" },
+            { pt: "Escrevendo uma carta", en: "Writing a letter", category: "actions", emoji: "✍️" },
+            { pt: "Lendo um livro", en: "Reading a book", category: "actions", emoji: "📖" },
+            { pt: "Correndo no parque", en: "Running in the park", category: "actions", emoji: "🏃" },
+            { pt: "Nadando na piscina", en: "Swimming in the pool", category: "actions", emoji: "🏊" },
+            { pt: "Cozinhando o jantar", en: "Cooking dinner", category: "actions", emoji: "🍳" },
+            { pt: "Bebendo água", en: "Drinking water", category: "actions", emoji: "🚰" },
+            { pt: "Estudando português", en: "Studying Portuguese", category: "actions", emoji: "📚" },
+            { pt: "Ouvindo música", en: "Listening to music", category: "actions", emoji: "🎧" },
+            { pt: "Falando ao telefone", en: "Talking on the phone", category: "actions", emoji: "📱" },
+            { pt: "Comprando roupas", en: "Buying clothes", category: "actions", emoji: "🛍️" },
+            { pt: "Viajando de avião", en: "Traveling by airplane", category: "actions", emoji: "✈️" },
+            { pt: "Limpando a casa", en: "Cleaning the house", category: "actions", emoji: "🧹" },
+            { pt: "Lavando a louça", en: "Washing the dishes", category: "actions", emoji: "🍽️" },
+            { pt: "Dirigindo o carro", en: "Driving the car", category: "actions", emoji: "🚙" },
+            { pt: "Brincando com o cão", en: "Playing with the dog", category: "actions", emoji: "🐕" },
+            { pt: "Sorrindo para a foto", en: "Smiling for the picture", category: "actions", emoji: "📸" },
+
+            // Places
+            { pt: "Uma praia bonita", en: "A beautiful beach", category: "places", emoji: "🏖️" },
+            { pt: "Um restaurante italiano", en: "An Italian restaurant", category: "places", emoji: "🍝" },
+            { pt: "Uma sala de estar aconchegante", en: "A cozy living room", category: "places", emoji: "🛋️" },
+            { pt: "Um quarto confortável", en: "A comfortable bedroom", category: "places", emoji: "🛏️" },
+            { pt: "Uma rua movimentada", en: "A busy street", category: "places", emoji: "🛣️" },
+            { pt: "Uma casa familiar", en: "A family house", category: "places", emoji: "🏡" },
+            { pt: "Um banheiro limpo", en: "A clean bathroom", category: "places", emoji: "🚿" },
+            { pt: "Uma cozinha moderna", en: "A modern kitchen", category: "places", emoji: "🍳" },
+            { pt: "Um café charmoso", en: "A charming café", category: "places", emoji: "☕" },
+            { pt: "Um parque verde", en: "A green park", category: "places", emoji: "🌳" },
+            { pt: "Um supermercado grande", en: "A large supermarket", category: "places", emoji: "🛒" },
+            { pt: "Um hospital central", en: "A central hospital", category: "places", emoji: "🏥" },
+            { pt: "Uma farmácia", en: "A pharmacy", category: "places", emoji: "💊" },
+            { pt: "Uma livraria", en: "A bookstore", category: "places", emoji: "📚" },
+            { pt: "Um museu de arte", en: "An art museum", category: "places", emoji: "🏛️" },
+            { pt: "Um aeroporto internacional", en: "An international airport", category: "places", emoji: "🛫" },
+            { pt: "Uma estação de trem", en: "A train station", category: "places", emoji: "🚉" },
+            { pt: "Um banco", en: "A bank", category: "places", emoji: "🏦" },
+            { pt: "Uma escola", en: "A school", category: "places", emoji: "🏫" },
+            { pt: "Uma universidade", en: "A university", category: "places", emoji: "🎓" },
+            { pt: "Uma padaria", en: "A bakery", category: "places", emoji: "🥖" },
+            { pt: "Uma academia de ginástica", en: "A gym", category: "places", emoji: "🏋️" },
+            { pt: "Um cinema", en: "A movie theater", category: "places", emoji: "🎬" },
+            { pt: "Um teatro histórico", en: "A historic theater", category: "places", emoji: "🎭" },
+
+            // Careers & Industries
+            { pt: "Um médico", en: "A doctor", category: "careers", emoji: "👨‍⚕️" },
+            { pt: "Um paciente", en: "A patient", category: "careers", emoji: "🤒" },
+            { pt: "Um encanador", en: "A plumber", category: "careers", emoji: "🔧" },
+            { pt: "Um eletricista", en: "An electrician", category: "careers", emoji: "⚡" },
+            { pt: "Um advogado", en: "A lawyer", category: "careers", emoji: "⚖️" },
+            { pt: "Um corretor de imóveis", en: "A real estate agent", category: "careers", emoji: "🏠" },
+            { pt: "Um agente de financiamento", en: "A mortgage agent", category: "careers", emoji: "📋" },
+            { pt: "Um desenvolvedor web", en: "A web developer", category: "careers", emoji: "💻" },
+            { pt: "Um engenheiro", en: "An engineer", category: "careers", emoji: "👷" },
+            { pt: "Um arquiteto", en: "An architect", category: "careers", emoji: "📐" },
+            { pt: "Um professor", en: "A teacher", category: "careers", emoji: "🧑‍🏫" },
+            { pt: "Um enfermeiro", en: "A nurse", category: "careers", emoji: "👩‍⚕️" },
+            { pt: "Um chef de cozinha", en: "A chef", category: "careers", emoji: "👨‍🍳" },
+            { pt: "Um contador", en: "An accountant", category: "careers", emoji: "📊" },
+            { pt: "Um designer gráfico", en: "A graphic designer", category: "careers", emoji: "🎨" },
+            { pt: "Um piloto", en: "An airline pilot", category: "careers", emoji: "✈️" }
+        ];
+
+        const vocabularyDataES = [
+            // Objects
+            { pt: "Una taza de café", en: "A cup of coffee", category: "objects", emoji: "☕" },
+            { pt: "Un carro", en: "A car", category: "objects", emoji: "🚗" },
+            { pt: "Un tren", en: "A train", category: "objects", emoji: "🚆" },
+            { pt: "Una casa", en: "A house", category: "objects", emoji: "🏠" },
+            { pt: "Un tenedor", en: "A fork", category: "objects", emoji: "🍴" },
+            { pt: "Un cuchillo", en: "A knife", category: "objects", emoji: "🔪" },
+            { pt: "Una cuchara", en: "A spoon", category: "objects", emoji: "🥄" },
+            { pt: "Una puerta", en: "A door", category: "objects", emoji: "🚪" },
+            { pt: "Un armario", en: "A closet / wardrobe", category: "objects", emoji: "🚪" },
+            { pt: "Una bolsa", en: "A bag / purse", category: "objects", emoji: "👜" },
+            { pt: "Una tienda", en: "A store", category: "objects", emoji: "🏬" },
+            { pt: "Un hotel", en: "A hotel", category: "objects", emoji: "🏨" },
+            { pt: "Un edificio", en: "A building", category: "objects", emoji: "🏢" },
+            { pt: "Un libro", en: "A book", category: "objects", emoji: "📖" },
+            { pt: "Un lápiz", en: "A pencil", category: "objects", emoji: "✏️" },
+            { pt: "Un bolígrafo", en: "A pen", category: "objects", emoji: "🖊️" },
+            { pt: "Una botella", en: "A bottle", category: "objects", emoji: "🍾" },
+            { pt: "Un anillo", en: "A ring", category: "objects", emoji: "💍" },
+            { pt: "Un teléfono", en: "A phone", category: "objects", emoji: "☎️" },
+            { pt: "Un celular", en: "A cell phone", category: "objects", emoji: "📱" },
+            { pt: "Una computadora", en: "A computer", category: "objects", emoji: "💻" },
+            { pt: "Una mesa", en: "A table", category: "objects", emoji: "🪑" },
+            { pt: "Una silla", en: "A chair", category: "objects", emoji: "🪑" },
+            { pt: "Una ventana", en: "A window", category: "objects", emoji: "🪟" },
+            { pt: "Una cama", en: "A bed", category: "objects", emoji: "🛏️" },
+            { pt: "Un televisor", en: "A television", category: "objects", emoji: "📺" },
+            { pt: "Un reloj", en: "A watch / clock", category: "objects", emoji: "⌚" },
+            { pt: "Una llave", en: "A key", category: "objects", emoji: "🔑" },
+            { pt: "Una cartera", en: "A wallet", category: "objects", emoji: "👛" },
+            { pt: "Unos lentes", en: "Glasses", category: "objects", emoji: "👓" },
+            { pt: "Un paraguas", en: "An umbrella", category: "objects", emoji: "☂️" },
+            { pt: "Una bicicleta", en: "A bicycle", category: "objects", emoji: "🚲" },
+            { pt: "Un avión", en: "An airplane", category: "objects", emoji: "✈️" },
+            { pt: "Un barco", en: "A boat", category: "objects", emoji: "⛵" },
+            { pt: "Una flor", en: "A flower", category: "objects", emoji: "🌷" },
+            { pt: "Una planta", en: "A plant", category: "objects", emoji: "🪴" },
+            { pt: "Un espejo", en: "A mirror", category: "objects", emoji: "🪞" },
+            { pt: "Un cepillo", en: "A brush", category: "objects", emoji: "🖌️" },
+            { pt: "Un jabón", en: "Soap", category: "objects", emoji: "🧼" },
+            { pt: "Una toalla", en: "A towel", category: "objects", emoji: "🧺" },
+            { pt: "Un sombrero", en: "A hat", category: "objects", emoji: "👒" },
+            { pt: "Una camisa", en: "A shirt", category: "objects", emoji: "👕" },
+            { pt: "Unos pantalones", en: "Pants", category: "objects", emoji: "👖" },
+            { pt: "Un zapato", en: "A shoe", category: "objects", emoji: "👞" },
+            { pt: "Un calcetín", en: "A sock", category: "objects", emoji: "🧦" },
+            { pt: "Un plato", en: "A plate", category: "objects", emoji: "🍽️" },
+            { pt: "Un vaso", en: "A glass / cup", category: "objects", emoji: "🥛" },
+            { pt: "Una sartén", en: "A pan / pot", category: "objects", emoji: "🍲" },
+            { pt: "Una estufa", en: "A stove", category: "objects", emoji: "🔥" },
+            { pt: "Un refrigerador", en: "A refrigerator", category: "objects", emoji: "🧊" },
+            { pt: "Una bombilla", en: "A lamp / lightbulb", category: "objects", emoji: "💡" },
+            { pt: "Un cuadro", en: "A painting / picture frame", category: "objects", emoji: "🖼️" },
+            { pt: "Una guitarra", en: "A guitar", category: "objects", emoji: "🎸" },
+            { pt: "Una pelota", en: "A ball", category: "objects", emoji: "⚽" },
+            { pt: "Una maleta", en: "A suitcase", category: "objects", emoji: "🧳" },
+            { pt: "Un periódico", en: "A newspaper", category: "objects", emoji: "📰" },
+            { pt: "Una revista", en: "A magazine", category: "objects", emoji: "🗞️" },
+            { pt: "Una carta", en: "A letter", category: "objects", emoji: "✉️" },
+
+            // Actions
+            { pt: "Caminando por la calle", en: "Walking on the street", category: "actions", emoji: "🚶" },
+            { pt: "Cantando una canción", en: "Singing a song", category: "actions", emoji: "🎤" },
+            { pt: "Bailando salsa", en: "Dancing", category: "actions", emoji: "💃" },
+            { pt: "Comiendo en el restaurante", en: "Eating at the restaurant", category: "actions", emoji: "🍲" },
+            { pt: "Durmiendo en la cama", en: "Sleeping in bed", category: "actions", emoji: "😴" },
+            { pt: "Llorando mucho", en: "Crying a lot", category: "actions", emoji: "😢" },
+            { pt: "Trabajando en la oficina", en: "Working at the office", category: "actions", emoji: "💻" },
+            { pt: "Viendo la televisión", en: "Watching television", category: "actions", emoji: "📺" },
+            { pt: "Haciendo una llamada", en: "Making a phone call", category: "actions", emoji: "📞" },
+            { pt: "Escribiendo una carta", en: "Writing a letter", category: "actions", emoji: "✍️" },
+            { pt: "Leyendo un libro", en: "Reading a book", category: "actions", emoji: "📖" },
+            { pt: "Corriendo en el parque", en: "Running in the park", category: "actions", emoji: "🏃" },
+            { pt: "Nadando en la piscina", en: "Swimming in the pool", category: "actions", emoji: "🏊" },
+            { pt: "Cocinando la cena", en: "Cooking dinner", category: "actions", emoji: "🍳" },
+            { pt: "Bebendo agua", en: "Drinking water", category: "actions", emoji: "🚰" },
+            { pt: "Estudiando español", en: "Studying Spanish", category: "actions", emoji: "📚" },
+            { pt: "Escuchando música", en: "Listening to music", category: "actions", emoji: "🎧" },
+            { pt: "Hablando por teléfono", en: "Talking on the phone", category: "actions", emoji: "📱" },
+            { pt: "Comprando ropa", en: "Buying clothes", category: "actions", emoji: "🛍️" },
+            { pt: "Viajando en avión", en: "Traveling by airplane", category: "actions", emoji: "✈️" },
+            { pt: "Limpiando la casa", en: "Cleaning the house", category: "actions", emoji: "🧹" },
+            { pt: "Lavando los platos", en: "Washing the dishes", category: "actions", emoji: "🍽️" },
+            { pt: "Manejando el carro", en: "Driving the car", category: "actions", emoji: "🚙" },
+            { pt: "Jugando con el perro", en: "Playing with the dog", category: "actions", emoji: "🐕" },
+            { pt: "Sonriendo para la foto", en: "Smiling for the picture", category: "actions", emoji: "📸" },
+
+            // Places
+            { pt: "Una playa hermosa", en: "A beautiful beach", category: "places", emoji: "🏖️" },
+            { pt: "Un restaurante italiano", en: "An Italian restaurant", category: "places", emoji: "🍝" },
+            { pt: "Una sala acogedora", en: "A cozy living room", category: "places", emoji: "🛋️" },
+            { pt: "Un dormitorio cómodo", en: "A comfortable bedroom", category: "places", emoji: "🛏️" },
+            { pt: "Una calle transitada", en: "A busy street", category: "places", emoji: "🛣️" },
+            { pt: "Una casa familiar", en: "A family house", category: "places", emoji: "🏡" },
+            { pt: "Un baño limpio", en: "A clean bathroom", category: "places", emoji: "🚿" },
+            { pt: "Una cocina moderna", en: "A modern kitchen", category: "places", emoji: "🍳" },
+            { pt: "Un café encantador", en: "A charming café", category: "places", emoji: "☕" },
+            { pt: "Un parque verde", en: "A green park", category: "places", emoji: "🌳" },
+            { pt: "Un supermercado grande", en: "A large supermarket", category: "places", emoji: "🛒" },
+            { pt: "Un hospital central", en: "A central hospital", category: "places", emoji: "🏥" },
+            { pt: "Una farmacia", en: "A pharmacy", category: "places", emoji: "💊" },
+            { pt: "Una librería", en: "A bookstore", category: "places", emoji: "📚" },
+            { pt: "Un museo de arte", en: "An art museum", category: "places", emoji: "🏛️" },
+            { pt: "Un aeropuerto internacional", en: "An international airport", category: "places", emoji: "🛫" },
+            { pt: "Una estación de tren", en: "A train station", category: "places", emoji: "🚉" },
+            { pt: "Un banco", en: "A bank", category: "places", emoji: "🏦" },
+            { pt: "Una escuela", en: "A school", category: "places", emoji: "🏫" },
+            { pt: "Una universidad", en: "A university", category: "places", emoji: "🎓" },
+            { pt: "Una panadería", en: "A bakery", category: "places", emoji: "🥖" },
+            { pt: "Un gimnasio", en: "A gym", category: "places", emoji: "🏋️" },
+            { pt: "Un cine", en: "A movie theater", category: "places", emoji: "🎬" },
+            { pt: "Un teatro histórico", en: "A historic theater", category: "places", emoji: "🎭" },
+
+            // Careers & Industries
+            { pt: "Un médico", en: "A doctor", category: "careers", emoji: "👨‍⚕️" },
+            { pt: "Un paciente", en: "A patient", category: "careers", emoji: "🤒" },
+            { pt: "Un plomero", en: "A plumber", category: "careers", emoji: "🔧" },
+            { pt: "Un electricista", en: "An electrician", category: "careers", emoji: "⚡" },
+            { pt: "Un abogado", en: "A lawyer", category: "careers", emoji: "⚖️" },
+            { pt: "Un agente inmobiliario", en: "A real estate agent", category: "careers", emoji: "🏠" },
+            { pt: "Un agente de hipotecas", en: "A mortgage agent", category: "careers", emoji: "📋" },
+            { pt: "Un desarrollador web", en: "A web developer", category: "careers", emoji: "💻" },
+            { pt: "Un ingeniero", en: "An engineer", category: "careers", emoji: "👷" },
+            { pt: "Un arquitecto", en: "An architect", category: "careers", emoji: "📐" },
+            { pt: "Un profesor", en: "A teacher", category: "careers", emoji: "🧑‍🏫" },
+            { pt: "Un enfermero", en: "A nurse", category: "careers", emoji: "👩‍⚕️" },
+            { pt: "Un chef", en: "A chef", category: "careers", emoji: "👨‍🍳" },
+            { pt: "Un contador", en: "An accountant", category: "careers", emoji: "📊" },
+            { pt: "Un diseñador gráfico", en: "A graphic designer", category: "careers", emoji: "🎨" },
+            { pt: "Un piloto", en: "An airline pilot", category: "careers", emoji: "✈️" }
+        ];
+
+        let currentPool = [];
+        let currentIndex = 0;
+        let score = 0;
+        let streak = 0;
+        let currentTarget = null;
+        let isAnswered = false;
+
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            const toggleBtn = document.getElementById('lang-toggle-btn');
+            
+            if (currentLanguage === 'es') {
+                toggleBtn.innerHTML = "🇧🇷 Switch to Portuguese Mode";
+                document.getElementById('main-title').innerText = "Swan Ocean Spanish Quest";
+                document.getElementById('main-subtitle').innerText = "Learn Essential Spanish Words, Actions, Careers & Places";
+                document.getElementById('cat-screen-title').innerText = "Elige tu Categoría de Aprendizaje";
+                document.getElementById('cat-screen-desc').innerText = "Selecciona una categoría abajo o juega con todos los elementos mezclados para el desafío definitivo.";
+                document.getElementById('cat-obj-title').innerText = "Objetos Populares";
+                document.getElementById('cat-obj-desc').innerText = "Café, taza, carro, libro, teléfono, etc.";
+                document.getElementById('cat-act-title').innerText = "Acciones y Verbos";
+                document.getElementById('cat-act-desc').innerText = "Caminar, cantar, bailar, comer, dormir, etc.";
+                document.getElementById('cat-pla-title').innerText = "Lugares y Habitaciones";
+                document.getElementById('cat-pla-desc').innerText = "Playa, restaurante, cocina, calle, etc.";
+                document.getElementById('cat-car-title').innerText = "Carreras e Industrias";
+                document.getElementById('cat-car-desc').innerText = "Plomero, electricista, médico, abogado, etc.";
+                document.getElementById('play-all-btn').innerText = "✨ Jugar Todos los Elementos Mezclados";
+                document.getElementById('back-menu-btn').innerText = "← Volver a Categorías";
+                document.getElementById('prompt-label').innerText = "Encuentra la imagen para:";
+                document.getElementById('comp-title').innerText = "¡Felicitaciones!";
+                document.getElementById('comp-desc').innerText = "¡Has completado con éxito esta ronda de vocabulario en estilo Blue Ocean!";
+                document.getElementById('comp-score-label').innerText = "Puntuación Final";
+                document.getElementById('play-again-btn').innerText = "Jugar de Nuevo";
+                document.getElementById('footer-text').innerHTML = "Diseñado con elegancia Swan Blue Ocean &bull; Experiencia de Aprendizaje en Español";
+            } else {
+                toggleBtn.innerHTML = "🇪🇸 Switch to Spanish Mode";
+                document.getElementById('main-title').innerText = "Swan Ocean Portuguese Quest";
+                document.getElementById('main-subtitle').innerText = "Learn 100+ Essential Brazilian Portuguese Words & Careers";
+                document.getElementById('cat-screen-title').innerText = "Choose Your Learning Category";
+                document.getElementById('cat-screen-desc').innerText = "Select a category below or play with all items shuffled together for the ultimate Blue Ocean challenge.";
+                document.getElementById('cat-obj-title').innerText = "Popular Objects";
+                document.getElementById('cat-obj-desc').innerText = "Coffee, cup, car, book, phone, pen, etc.";
+                document.getElementById('cat-act-title').innerText = "Actions & Verbs";
+                document.getElementById('cat-act-desc').innerText = "Walking, singing, dancing, eating, sleeping, etc.";
+                document.getElementById('cat-pla-title').innerText = "Places & Rooms";
+                document.getElementById('cat-pla-desc').innerText = "Beach, restaurant, kitchen, bedroom, street, etc.";
+                document.getElementById('cat-car-title').innerText = "Careers & Industries";
+                document.getElementById('cat-car-desc').innerText = "Plumber, electrician, doctor, lawyer, developer, etc.";
+                document.getElementById('play-all-btn').innerText = "✨ Play All Shuffled Words & Sentences";
+                document.getElementById('back-menu-btn').innerText = "← Back to Categories";
+                document.getElementById('prompt-label').innerText = "Find the picture for:";
+                document.getElementById('comp-title').innerText = "Parabéns! (Congratulations!)";
+                document.getElementById('comp-desc').innerText = "You successfully completed this round of vocabulary quest in Blue Ocean style.";
+                document.getElementById('comp-score-label').innerText = "Final Score";
+                document.getElementById('play-again-btn').innerText = "Play Again";
+                document.getElementById('footer-text').innerHTML = "Designed with Swan Blue Ocean elegance &bull; Brazilian Portuguese & Spanish Learning Experience";
+            }
+
+            returnToMenu();
+        }
+
+        function toggleLanguage() {
+            if (currentLanguage === 'pt') {
+                setLanguage('es');
+            } else {
+                setLanguage('pt');
+            }
+        }
+
+        // Fisher-Yates shuffle algorithm for robust randomization
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function startGame(category) {
+            const dataSet = (currentLanguage === 'pt') ? vocabularyDataPT : vocabularyDataES;
+            if (category === 'all') {
+                currentPool = [...dataSet];
+            } else {
+                currentPool = dataSet.filter(item => item.category === category);
+            }
+            
+            // Thoroughly shuffle the pool every single time a game is started
+            shuffleArray(currentPool);
+            
+            currentIndex = 0;
+            score = 0;
+            streak = 0;
+            
+            document.getElementById('score-display').innerText = score;
+            document.getElementById('streak-display').innerText = streak + ' 🔥';
+            
+            document.getElementById('category-screen').classList.add('hidden');
+            document.getElementById('completion-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            
+            loadQuestion();
+        }
+
+        function returnToMenu() {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('completion-screen').classList.add('hidden');
+            document.getElementById('category-screen').classList.remove('hidden');
+        }
+
+        function loadQuestion() {
+            if (currentIndex >= currentPool.length) {
+                document.getElementById('game-screen').classList.add('hidden');
+                document.getElementById('completion-screen').classList.remove('hidden');
+                document.getElementById('final-score').innerText = score;
+                return;
+            }
+
+            isAnswered = false;
+            currentTarget = currentPool[currentIndex];
+            
+            document.getElementById('target-phrase-pt').innerText = currentTarget.pt;
+            document.getElementById('target-phrase-en').innerText = `Translation: "${currentTarget.en}"`;
+            document.getElementById('translation-container').classList.add('hidden');
+            document.getElementById('category-badge').innerText = currentTarget.category.toUpperCase();
+            
+            document.getElementById('feedback-box').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+
+            const dataSet = (currentLanguage === 'pt') ? vocabularyDataPT : vocabularyDataES;
+            let options = [currentTarget];
+            while (options.length < 4 && options.length < dataSet.length) {
+                let randomItem = dataSet[Math.floor(Math.random() * dataSet.length)];
+                if (!options.some(opt => opt.pt === randomItem.pt)) {
+                    options.push(randomItem);
+                }
+            }
+
+            // Shuffle option cards as well
+            shuffleArray(options);
+
+            const grid = document.getElementById('choices-grid');
+            grid.innerHTML = '';
+
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "flex flex-col items-center justify-center p-6 bg-swan-50 hover:bg-swan-100 border-2 border-swan-200 hover:border-ocean rounded-2xl transition-all shadow-sm group transform hover:-translate-y-1";
+                btn.innerHTML = `
+                    <span class="text-5xl mb-3 group-hover:scale-110 transition-transform">${opt.emoji}</span>
+                    <span class="text-xs font-medium text-swan-700 text-center opacity-70 group-hover:opacity-100">[Hidden Word]</span>
+                `;
+                btn.onclick = () => checkAnswer(opt, currentTarget, btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected, target, buttonElement) {
+            if (isAnswered) return;
+            isAnswered = true;
+
+            const feedbackBox = document.getElementById('feedback-box');
+            feedbackBox.classList.remove('hidden');
+
+            const allButtons = document.querySelectorAll('#choices-grid button');
+
+            if (selected.pt === target.pt) {
+                score += 10;
+                streak += 1;
+                document.getElementById('score-display').innerText = score;
+                document.getElementById('streak-display').innerText = streak + ' 🔥';
+
+                buttonElement.classList.remove('bg-swan-50', 'border-swan-200');
+                buttonElement.classList.add('bg-sky-50', 'border-sky-500', 'ring-2', 'ring-sky-400');
+
+                buttonElement.querySelector('span:last-child').innerText = target.en;
+                buttonElement.querySelector('span:last-child').classList.remove('opacity-70');
+
+                feedbackBox.className = "w-full py-3 px-6 rounded-2xl text-center font-medium text-sm bg-sky-100 text-sky-900 border border-sky-300";
+                feedbackBox.innerHTML = currentLanguage === 'pt' ? `✨ <strong>Correto!</strong> Excellent choice.` : `✨ <strong>¡Correcto!</strong> ¡Excelente elección!`;
+            } else {
+                streak = 0;
+                document.getElementById('streak-display').innerText = streak + ' 🔥';
+
+                buttonElement.classList.remove('bg-swan-50', 'border-swan-200');
+                buttonElement.classList.add('bg-red-50', 'border-red-400');
+                buttonElement.querySelector('span:last-child').innerText = selected.en;
+                buttonElement.querySelector('span:last-child').classList.remove('opacity-70');
+
+                document.getElementById('translation-container').classList.remove('hidden');
+
+                allButtons.forEach(btn => {
+                    if (btn.innerText.includes(target.emoji)) {
+                        btn.classList.add('border-sky-500', 'bg-sky-50', 'ring-2', 'ring-sky-400');
+                        btn.querySelector('span:last-child').innerText = target.en;
+                        btn.querySelector('span:last-child').classList.remove('opacity-70');
+                    }
+                });
+
+                feedbackBox.className = "w-full py-3 px-6 rounded-2xl text-center font-medium text-sm bg-blue-50 text-ocean-deep border border-ocean";
+                feedbackBox.innerHTML = currentLanguage === 'pt' ? 
+                    `❌ <strong>Incorreto.</strong> The translation is revealed above.` : 
+                    `❌ <strong>Incorrecto.</strong> La traducción se muestra arriba.`;
+            }
+
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentIndex++;
+            loadQuestion();
+        }
+
+        function speakWord() {
+            if ('speechSynthesis' in window && currentTarget) {
+                const utterance = new SpeechSynthesisUtterance(currentTarget.pt);
+                utterance.lang = currentLanguage === 'pt' ? 'pt-BR' : 'es-ES';
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#1869ba">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="The WebSwan Sky Dream - glide the WebSwan down an endless road in the sky. Plays on iPhone, Android and computer.">
+<title>The WebSwan Sky Dream</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Audiowide&family=Nunito:wght@400;700;800&display=swap">
+<style>
+/* Layout: full-screen canvas, slim HUD on top, touch control bar at the bottom on phones, centered cards for start / help / game over. Single WebSwan-blue look in every theme. */
+:root{
+  --sky:#7fd9f0; --sky2:#7fc8f0; --teal:#18afba; --royal:#1869ba; --mist:#b7d7f7;
+  --navy:#0a2747; --ink:#ffffff; --ink-soft:#dcefff; --card:rgba(9,38,72,.84); --line:rgba(127,217,240,.55);
+  --display:"Audiowide","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+html,body{height:100%}
+[hidden]{display:none!important}
+body{margin:0;background:var(--navy);color:var(--ink);font-family:var(--body);overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#game{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:crosshair}
+.hud{position:fixed;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
+  padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 0;pointer-events:none;font-family:var(--display);letter-spacing:.06em}
+.hud .lbl{display:block;font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.14em}
+.hud .num{font-size:clamp(22px,5vw,32px);font-variant-numeric:tabular-nums;color:var(--ink);text-shadow:0 2px 12px rgba(24,105,186,.8)}
+.hud .mid{pointer-events:auto;display:flex;gap:8px}
+.hud .right{text-align:right}
+.chip{font-family:var(--body);font-weight:800;font-size:14px;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:999px;
+  min-width:44px;height:44px;padding:0 14px;cursor:pointer}
+.chip:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+.overlay{position:fixed;inset:0;display:grid;place-items:center;padding:16px;overflow-y:auto;touch-action:pan-y}
+.card{width:min(440px,100%);background:var(--card);border:1px solid var(--line);border-radius:22px;padding:24px 20px 20px;
+  text-align:center;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 20px 60px rgba(2,14,32,.6)}
+.card h1{font-family:var(--display);font-weight:400;font-size:clamp(26px,7vw,38px);line-height:1.08;margin:0 0 6px;text-wrap:balance;
+  background:linear-gradient(180deg,#fff 25%,var(--sky));-webkit-background-clip:text;background-clip:text;color:transparent}
+.card h2{font-family:var(--display);font-weight:400;font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--sky);margin:16px 0 8px;text-align:left}
+.card .sub{margin:0 0 6px;color:var(--ink-soft);font-size:15px;line-height:1.5}
+.card .big{font-family:var(--display);font-size:46px;margin:4px 0 2px;font-variant-numeric:tabular-nums;color:var(--sky)}
+.how{display:grid;gap:8px;text-align:left;margin:0 0 18px}
+.how .row{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;font-size:14.5px;line-height:1.45;color:var(--ink-soft)}
+.how .ic{display:inline-grid;place-items:center;min-width:34px;height:34px;border-radius:10px;background:rgba(127,217,240,.16);border:1px solid var(--line);
+  font-family:var(--display);font-size:13px;color:#fff;padding:0 6px}
+.how b{color:#fff;font-weight:800}
+.tabs{display:flex;gap:6px;justify-content:center;margin:6px 0 4px}
+.tabs button{font-family:var(--body);font-weight:800;font-size:13px;color:var(--ink-soft);background:transparent;border:1px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--teal);color:#fff;border-color:var(--teal)}
+button.play{font-family:var(--display);font-size:18px;letter-spacing:.08em;color:var(--navy);background:linear-gradient(180deg,#c9f2fb,var(--sky));
+  border:0;border-radius:999px;padding:14px 34px;cursor:pointer;box-shadow:0 6px 0 var(--teal),0 10px 26px rgba(127,217,240,.35)}
+button.play:active{transform:translateY(3px);box-shadow:0 3px 0 var(--teal)}
+button.play:focus-visible{outline:3px solid #fff;outline-offset:4px}
+.credit{margin:14px 0 0;font-size:12px;color:var(--ink-soft);opacity:.85}
+.credit a{color:var(--sky)}
+/* touch controls */
+.pad{position:fixed;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:10px;
+  padding:0 16px calc(env(safe-area-inset-bottom,0px) + 14px);pointer-events:none}
+.pad button{pointer-events:auto;height:72px;border-radius:20px;border:1px solid var(--line);background:rgba(9,38,72,.55);color:#fff;
+  font-family:var(--display);font-size:16px;letter-spacing:.06em;touch-action:none;-webkit-tap-highlight-color:transparent;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.pad button.jump{background:linear-gradient(180deg,rgba(127,217,240,.85),rgba(24,175,186,.85));color:var(--navy);font-size:20px;border-color:#c9f2fb}
+.pad button.on{transform:scale(.96);filter:brightness(1.2)}
+.pad .arrow{font-size:28px;line-height:1}
+@media (hover:hover) and (pointer:fine){.pad{display:none}}
+</style>
+<style id="wsg-style">
+.wsg-nav{position:relative;z-index:100001;width:100%;box-sizing:border-box;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;
+ padding:8px 12px;background:#0b2447;color:#fff;font:600 13px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;letter-spacing:0}
+.wsg-nav .wsg-brand{font-weight:800;margin-right:4px;white-space:nowrap}
+.wsg-nav a{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 12px;border-radius:999px;text-decoration:none;color:#fff;
+ background:rgba(127,200,240,.16);border:1px solid rgba(127,200,240,.45);white-space:nowrap}
+.wsg-nav a:hover,.wsg-nav a:focus-visible{background:#18afba;border-color:#18afba;outline:none}
+.wsg-nav a[aria-current="page"]{background:#7fd9f0;color:#0b2447;border-color:#7fd9f0}
+.wsg-more{margin:18px 0 0;padding-top:14px;border-top:1px solid rgba(183,215,247,.35);text-align:center}
+.wsg-more p{margin:0 0 10px;font:700 12px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#b7d7f7}
+.wsg-more .wsg-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.wsg-more a{flex:1 1 150px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 10px;border-radius:14px;text-decoration:none;
+ background:rgba(24,105,186,.35);border:1px solid rgba(127,200,240,.5);color:#fff;font:700 15px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.wsg-more a small{font-weight:500;font-size:12px;color:#b7d7f7}
+.wsg-more a:hover,.wsg-more a:focus-visible{background:#18afba;outline:none}
+</style>
+</head>
+<body>
+<canvas id="game" aria-label="The WebSwan Sky Dream game"></canvas>
+
+<div class="hud">
+  <div><span class="lbl">Distance</span><span class="num" id="score">0</span></div>
+  <div class="mid">
+    <button class="chip" id="helpBtn" type="button" aria-label="How to play">?</button>
+    <button class="chip" id="muteBtn" type="button" aria-pressed="false" aria-label="Sound">♪ On</button>
+  </div>
+  <div class="right"><span class="lbl">Best</span><span class="num" id="best">0</span></div>
+</div>
+
+<div class="pad" id="pad" hidden>
+  <button id="leftBtn" type="button" aria-label="Steer left"><span class="arrow">◀</span></button>
+  <button id="jumpBtn" class="jump" type="button" aria-label="Jump">JUMP</button>
+  <button id="rightBtn" type="button" aria-label="Steer right"><span class="arrow">▶</span></button>
+</div>
+
+<template id="howTpl">
+  <div class="tabs" role="tablist">
+    <button type="button" role="tab" data-tab="phone">iPhone &amp; Android</button>
+    <button type="button" role="tab" data-tab="computer">Computer</button>
+  </div>
+  <div class="how" data-panel="phone">
+    <h2>On your phone</h2>
+    <div class="row"><span class="ic">JUMP</span><span>Tap the big <b>JUMP</b> button at the bottom, or tap anywhere on the sky road.</span></div>
+    <div class="row"><span class="ic">◀ ▶</span><span>Hold the <b>left</b> or <b>right</b> button to steer, or slide your finger across the screen.</span></div>
+    <div class="row"><span class="ic">↻</span><span>Turn your phone sideways for a wider view. Works in Safari on iPhone and Chrome on Android.</span></div>
+  </div>
+  <div class="how" data-panel="computer" hidden>
+    <h2>On a computer</h2>
+    <div class="row"><span class="ic">Space</span><span><b>Jump</b> with the Space bar, the ↑ key, or a mouse click.</span></div>
+    <div class="row"><span class="ic">← →</span><span><b>Steer</b> with the arrow keys or just move your mouse left and right.</span></div>
+  </div>
+  <div class="how">
+    <h2>The goal</h2>
+    <div class="row"><span class="ic">1</span><span>Keep the swan on the blue tiles. Fall through a gap and the run ends.</span></div>
+    <div class="row"><span class="ic">2</span><span><b>Jump</b> just before a gap. You can jump while gliding, but not in mid-air.</span></div>
+    <div class="row"><span class="ic">✦</span><span>Catch the glowing <b>feathers</b> for +25 points. The road speeds up the farther you go.</span></div>
+  </div>
+</template>
+
+<div class="overlay" id="startCard">
+  <div class="card">
+    <h1>The WebSwan Sky Dream</h1>
+    <p class="sub">Glide the WebSwan down an endless road in the sky.</p>
+    <div class="howSlot"></div>
+    <button class="play" id="startBtn" type="button">Take flight</button>
+    <div class="wsg-more"><p>More WebSwan games</p><div class="wsg-row"><a href="swan-game.html"><span>🧩 Swan Game</span><small>Retro sliding puzzle</small></a><a href="bra-spa.html"><span>🌊 The WebSwan Bra Spa</span><small>Portuguese & Spanish quest</small></a></div></div>
+    <p class="credit">A WebSwan game, inspired by <a href="https://codepen.io/KilledByAPixel/pen/azpjRdx" target="_blank" rel="noopener">Skydreams</a> by Frank Force.</p>
+  </div>
+</div>
+
+<div class="overlay" id="helpCard" hidden>
+  <div class="card">
+    <h1>How to play</h1>
+    <div class="howSlot"></div>
+    <button class="play" id="resumeBtn" type="button">Keep flying</button>
+  </div>
+</div>
+
+<div class="overlay" id="overCard" hidden>
+  <div class="card">
+    <h1>Splash! Into the clouds</h1>
+    <div class="big" id="finalScore">0</div>
+    <p class="sub" id="finalNote">Best: 0</p>
+    <p class="sub" style="font-size:13px;margin-bottom:16px">Tip: press JUMP a moment before the edge of a gap.</p>
+    <button class="play" id="againBtn" type="button">Back to start</button>
+    <div class="wsg-more"><p>More WebSwan games</p><div class="wsg-row"><a href="swan-game.html"><span>🧩 Swan Game</span><small>Retro sliding puzzle</small></a><a href="bra-spa.html"><span>🌊 The WebSwan Bra Spa</span><small>Portuguese & Spanish quest</small></a></div></div>
+  </div>
+</div>
+
+<script>
+(function(){
+const cv=document.getElementById('game'),ctx=cv.getContext('2d');
+const $=id=>document.getElementById(id);
+const scoreEl=$('score'),bestEl=$('best'),startCard=$('startCard'),overCard=$('overCard'),helpCard=$('helpCard');
+let W=0,H=0,DPR=1;
+function resize(){DPR=Math.min(window.devicePixelRatio||1,2);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*DPR|0;cv.height=H*DPR|0;ctx.setTransform(DPR,0,0,DPR,0,0)}
+addEventListener('resize',resize);resize();
+
+/* how-to-play blocks with phone / computer tabs */
+const touchFirst=matchMedia('(hover:none),(pointer:coarse)').matches;
+document.querySelectorAll('.howSlot').forEach(slot=>{
+  slot.appendChild($('howTpl').content.cloneNode(true));
+  const tabs=slot.querySelectorAll('[data-tab]');
+  const show=t=>{tabs.forEach(b=>b.setAttribute('aria-selected',String(b.dataset.tab===t)));slot.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==t)};
+  tabs.forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();show(b.dataset.tab)}));
+  show(touchFirst?'phone':'computer');
+});
+
+let best=0;try{best=+localStorage.getItem('swanSkyBest')||0}catch(e){}
+if(window.claude&&window.claude.hot&&window.claude.hot.data&&window.claude.hot.data.best)best=Math.max(best,window.claude.hot.data.best);
+bestEl.textContent=best;
+window.claude?.hot?.snapshot?.(()=>({best}));
+
+/* sound */
+let audio=null,muted=false;
+function tone(f,d,type,vol){if(muted)return;try{audio=audio||new (window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();const o=audio.createOscillator(),g=audio.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,audio.currentTime);o.frequency.exponentialRampToValueAtTime(f*1.6,audio.currentTime+d);g.gain.setValueAtTime(vol||.08,audio.currentTime);g.gain.exponentialRampToValueAtTime(.0001,audio.currentTime+d);o.connect(g).connect(audio.destination);o.start();o.stop(audio.currentTime+d)}catch(e){}}
+$('muteBtn').addEventListener('click',e=>{e.stopPropagation();muted=!muted;e.currentTarget.textContent=muted?'♪ Off':'♪ On';e.currentTarget.setAttribute('aria-pressed',String(muted))});
+
+/* track */
+const LANES=7;let rows,gen;
+function rnd(){gen.seed=(gen.seed*16807)%2147483647;return (gen.seed-1)/2147483646}
+function resetTrack(){rows=new Map();gen={seed:(Math.random()*1e9|0)+1,c:3,w:5,gap:0,sinceGap:0,prev:null,k:-10}}
+function makeRow(k){
+  const d=Math.min(1,Math.max(0,(k-40)/1500));
+  let mask=new Array(LANES).fill(false),gem=-1;
+  if(k<40){for(let i=1;i<6;i++)mask[i]=true}
+  else if(gen.gap>0){gen.gap--}
+  else if(gen.sinceGap>9&&rnd()<.045+.07*d){gen.gap=Math.floor(rnd()*(1.3+2*d));gen.sinceGap=0}
+  else{
+    gen.c=Math.min(5,Math.max(1,gen.c+(rnd()-.5)*1.0));
+    gen.w=Math.min(5,Math.max(1.4,gen.w+(rnd()-.5)*.8));
+    const width=Math.max(1.2,gen.w*(1-d*.4));
+    for(let i=0;i<LANES;i++)mask[i]=Math.abs(i-gen.c)<=width/2+.01;
+    if(!mask.some(Boolean))mask[Math.round(gen.c)]=true;
+    if(gen.prev&&gen.prev.some(Boolean)&&!mask.some((m,i)=>m&&gen.prev[i])){mask[gen.prev.findIndex(Boolean)]=true}
+    const on=mask.map((m,i)=>m?i:-1).filter(i=>i>=0);
+    if(on.length>2&&rnd()<.08*d){mask[on[1+Math.floor(rnd()*(on.length-2))]]=false}
+    if(rnd()<.12){gem=on[Math.floor(rnd()*on.length)]}
+    gen.sinceGap++;
+  }
+  if(mask.some(Boolean))gen.prev=mask;
+  return {mask,gem,shade:k};
+}
+function row(k){while(gen.k<k){gen.k++;rows.set(gen.k,makeRow(gen.k))}return rows.get(k)||{mask:[],gem:-1,shade:0}}
+/* WebSwan blues for tiles: [r,g,b] */
+const TILE=[[127,217,240],[127,200,240],[24,175,186],[24,105,186],[183,215,247]];
+function tileColor(i,k,dark){const c=TILE[(i*2+Math.floor(k/3))%TILE.length];const f=dark;return `rgb(${c[0]*f|0},${c[1]*f|0},${c[2]*f|0})`}
+
+/* player + state */
+let P,state='title',pausedFrom=null,targetX=0,keys={},coyote=0,buffer=0;
+function resetPlayer(){P={x:0,y:0,z:0,vy:0,speed:7.5,grounded:true,falling:false,gems:0,flap:0,tilt:0,score:0}}
+resetTrack();resetPlayer();
+function wantJump(){if(state!=='play')return;buffer=.14}
+function doJump(){P.vy=7.6;P.grounded=false;coyote=0;buffer=0;P.flap=1;tone(520,.18,'triangle',.07);if(navigator.vibrate)try{navigator.vibrate(12)}catch(e){}}
+function showPad(on){$('pad').hidden=!on}
+function start(){resetTrack();resetPlayer();targetX=0;state='play';[startCard,overCard,helpCard].forEach(c=>c.hidden=true);showPad(true);tone(392,.25,'sine',.06)}
+function gameOver(){state='over';showPad(false);const s=P.score;const nb=s>best;if(nb){best=s;try{localStorage.setItem('swanSkyBest',best)}catch(e){}}bestEl.textContent=best;
+  $('finalScore').textContent=s;$('finalNote').textContent=(nb?'New best!':'Best: '+best)+'  ·  '+P.gems+' feather'+(P.gems===1?'':'s');overCard.hidden=false;tone(180,.5,'sawtooth',.05);
+  setTimeout(()=>$('againBtn').focus({preventScroll:true}),50)}
+function openHelp(){if(state==='play'){pausedFrom='play';state='paused';showPad(false)}helpCard.hidden=false}
+function closeHelp(){helpCard.hidden=true;if(pausedFrom==='play'){state='play';showPad(true)}else if(state==='title'){startCard.hidden=false}pausedFrom=null}
+$('startBtn').addEventListener('click',e=>{e.stopPropagation();start()});
+function toTitle(){resetTrack();resetPlayer();targetX=0;state='title';showPad(false);overCard.hidden=true;helpCard.hidden=true;startCard.hidden=false;
+  const sb=$('startBtn');setTimeout(()=>sb.focus({preventScroll:true}),50);const ov=startCard;ov.scrollTop=0}
+$('againBtn').addEventListener('click',e=>{e.stopPropagation();toTitle()});
+$('helpBtn').addEventListener('click',e=>{e.stopPropagation();if(!helpCard.hidden){closeHelp();return}if(state==='title')startCard.hidden=true;openHelp()});
+$('resumeBtn').addEventListener('click',e=>{e.stopPropagation();closeHelp()});
+
+/* input: canvas */
+let dragId=null,dragStartX=0,dragTarget=0;
+function steerFrom(clientX){targetX=Math.max(-3.4,Math.min(3.4,(clientX/W-.5)*8.4))}
+cv.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'){steerFrom(e.clientX)}else if(e.pointerId===dragId){targetX=Math.max(-3.4,Math.min(3.4,dragTarget+(e.clientX-dragStartX)/W*9))}});
+cv.addEventListener('pointerdown',e=>{e.preventDefault();if(e.pointerType==='mouse')steerFrom(e.clientX);else{dragId=e.pointerId;dragStartX=e.clientX;dragTarget=targetX}wantJump()});
+cv.addEventListener('pointerup',e=>{if(e.pointerId===dragId)dragId=null});
+cv.addEventListener('pointercancel',()=>{dragId=null});
+/* input: touch pad */
+function holdBtn(id,key){const b=$(id);const on=e=>{e.preventDefault();e.stopPropagation();keys[key]=true;b.classList.add('on');try{b.setPointerCapture(e.pointerId)}catch(_){} };const off=e=>{keys[key]=false;b.classList.remove('on')};
+  b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('lostpointercapture',off);b.addEventListener('contextmenu',e=>e.preventDefault())}
+holdBtn('leftBtn','ArrowLeft');holdBtn('rightBtn','ArrowRight');
+$('jumpBtn').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();e.currentTarget.classList.add('on');wantJump()});
+['pointerup','pointercancel','pointerleave'].forEach(t=>$('jumpBtn').addEventListener(t,e=>e.currentTarget.classList.remove('on')));
+/* input: keyboard */
+addEventListener('keydown',e=>{keys[e.key]=true;if([' ','ArrowUp','w','W'].includes(e.key)){if(document.activeElement&&document.activeElement.tagName==='BUTTON'&&state!=='play')return;e.preventDefault();if(state==='play')wantJump();else if(state==='title'&&startCard.hidden===false)start()}
+  if(['ArrowLeft','ArrowRight'].includes(e.key))e.preventDefault();if(e.key==='Escape'&&state==='play')openHelp()});
+addEventListener('keyup',e=>{keys[e.key]=false});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&state==='play')openHelp()});
+
+/* sky */
+const stars=Array.from({length:110},()=>({x:Math.random(),y:Math.random()*.5,r:Math.random()*1.3+.3,t:Math.random()*6}));
+const clouds=Array.from({length:9},()=>({x:Math.random(),y:.15+Math.random()*.25,s:.6+Math.random()*.9,v:.004+Math.random()*.006}));
+function drawSky(t,hz){
+  const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0a2747');g.addColorStop(.28,'#1869ba');g.addColorStop(Math.max(.3,hz/H-.12),'#18afba');g.addColorStop(hz/H,'#b7d7f7');g.addColorStop(Math.min(1,hz/H+.1),'#7fd9f0');g.addColorStop(1,'#123a66');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  for(const s of stars){const a=.3+.7*Math.abs(Math.sin(t*.8+s.t));ctx.globalAlpha=a*Math.max(0,1-s.y*2);ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(s.x*W,s.y*hz,s.r,0,7);ctx.fill()}
+  ctx.globalAlpha=1;
+  const sun=ctx.createRadialGradient(W/2,hz,0,W/2,hz,Math.max(W,H)*.45);sun.addColorStop(0,'rgba(240,252,255,.8)');sun.addColorStop(.3,'rgba(127,217,240,.25)');sun.addColorStop(1,'rgba(127,217,240,0)');
+  ctx.fillStyle=sun;ctx.fillRect(0,0,W,H);
+  for(const c of clouds){c.x=(c.x+c.v*.016)%1.3;const cx=(c.x-.15)*W,cy=c.y*hz+hz*.35,s=c.s*Math.min(W,H)*.09;ctx.fillStyle='rgba(235,248,255,.3)';
+    for(let i=0;i<5;i++){ctx.beginPath();ctx.ellipse(cx+(i-2)*s*.7,cy-Math.sin(i*1.3)*s*.25,s*.8,s*.38,0,0,7);ctx.fill()}}
+}
+
+/* 3D */
+let cam={x:0,y:2.6,z:-3.5},F=1,HZ=0,perfNow=0;
+function proj(x,y,z){const dz=z-cam.z;if(dz<.12)return null;const s=F/dz;return [W/2+(x-cam.x)*s,HZ+(cam.y-y)*s,s]}
+function quad(a,b,c,d){ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.lineTo(c[0],c[1]);ctx.lineTo(d[0],d[1]);ctx.closePath();ctx.fill()}
+let swanDrawn=false;
+function drawTrack(){
+  const k0=Math.floor(P.z)-3,k1=Math.floor(P.z)+64;
+  for(let k=k1;k>=k0;k--){
+    const r=row(k);const z0=k-.5,z1=k+.5,dz=z0-cam.z;
+    if(dz>=.15){
+      const fade=Math.max(0,Math.min(1,1-(dz-26)/36));
+      if(fade>0){ctx.globalAlpha=fade;
+        for(let i=0;i<LANES;i++){if(!r.mask[i])continue;
+          const x0=i-3.5,x1=i-2.5;
+          const a=proj(x0,0,z1),b=proj(x1,0,z1),c=proj(x1,0,z0),d=proj(x0,0,z0);if(!a||!b||!c||!d)continue;
+          const e=proj(x1,-.45,z0),f=proj(x0,-.45,z0);const lit=(i+k)%2?1:.9;
+          ctx.fillStyle=tileColor(i,k,.55);if(e&&f)quad(d,c,e,f);
+          if(i===0||!r.mask[i-1]){const g1=proj(x0,-.45,z1);if(g1&&f){ctx.fillStyle=tileColor(i,k,.42);quad(a,d,f,g1)}}
+          if(i===LANES-1||!r.mask[i+1]){const g2=proj(x1,-.45,z1);if(g2&&e){ctx.fillStyle=tileColor(i,k,.42);quad(b,c,e,g2)}}
+          ctx.fillStyle=tileColor(i,k,lit);quad(a,b,c,d);
+          ctx.strokeStyle='rgba(255,255,255,.45)';ctx.lineWidth=Math.max(.5,c[2]*.02);ctx.stroke();
+        }
+        if(r.gem>=0&&!r.taken){const p=proj(r.gem-3,.7+Math.sin(perfNow*4+k)*.15,k);if(p)drawFeather(p[0],p[1],p[2]*.32,k)}
+        ctx.globalAlpha=1;}
+    }
+    if(k===Math.round(P.z))drawSwanAndShadow();
+  }
+}
+function drawFeather(x,y,s,k){ctx.save();ctx.translate(x,y);ctx.rotate(Math.sin(perfNow*3+k)*.4);
+  const g=ctx.createRadialGradient(0,0,0,0,0,s*1.7);g.addColorStop(0,'rgba(255,255,255,.95)');g.addColorStop(.4,'rgba(127,217,240,.6)');g.addColorStop(1,'rgba(127,217,240,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,s*1.7,0,7);ctx.fill();
+  ctx.fillStyle='#ffffff';ctx.beginPath();ctx.moveTo(0,-s);ctx.quadraticCurveTo(s*.55,-s*.1,0,s);ctx.quadraticCurveTo(-s*.55,-s*.1,0,-s);ctx.fill();
+  ctx.strokeStyle='#1869ba';ctx.lineWidth=Math.max(1,s*.08);ctx.beginPath();ctx.moveTo(0,-s*.9);ctx.lineTo(0,s*1.15);ctx.stroke();ctx.restore()}
+function drawSwanAndShadow(){
+  swanDrawn=true;
+  if(!P.falling&&P.y>-0.1){const sh=proj(P.x,0,P.z);if(sh){ctx.fillStyle='rgba(8,30,60,.35)';ctx.beginPath();ctx.ellipse(sh[0],sh[1],sh[2]*.3/(1+P.y*.3),sh[2]*.09/(1+P.y*.3),0,0,7);ctx.fill()}}
+  const p=proj(P.x,P.y+.05,P.z);if(p)drawSwan(p[0],p[1],p[2]*.55);
+}
+function drawSwan(x,y,s){
+  ctx.save();ctx.translate(x,y);ctx.rotate(P.tilt);
+  const fl=Math.sin(P.flap*Math.PI)*.55+(P.grounded?Math.sin(perfNow*6)*.04:0);
+  const glow=ctx.createRadialGradient(0,-s*.5,0,0,-s*.5,s*1.4);glow.addColorStop(0,'rgba(230,248,255,.4)');glow.addColorStop(1,'rgba(230,248,255,0)');ctx.fillStyle=glow;ctx.beginPath();ctx.arc(0,-s*.5,s*1.4,0,7);ctx.fill();
+  for(const side of[-1,1]){ctx.fillStyle='#f4fbff';ctx.strokeStyle='#18afba';ctx.lineWidth=Math.max(1,s*.025);
+    ctx.beginPath();ctx.moveTo(side*s*.12,-s*.42);
+    ctx.bezierCurveTo(side*s*.55,-s*(.75+fl),side*s*1.0,-s*(.7+fl*1.2),side*s*.98,-s*(.42+fl*.6));
+    ctx.bezierCurveTo(side*s*.8,-s*.36,side*s*.55,-s*.2,side*s*.18,-s*.2);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.strokeStyle='rgba(24,105,186,.45)';ctx.lineWidth=Math.max(1,s*.015);
+    for(let f=1;f<4;f++){ctx.beginPath();ctx.moveTo(side*s*(.25+f*.17),-s*(.3+f*.02));ctx.lineTo(side*s*(.32+f*.19),-s*(.5+fl*(.3+f*.15)));ctx.stroke()}}
+  const bg=ctx.createLinearGradient(0,-s*.6,0,0);bg.addColorStop(0,'#ffffff');bg.addColorStop(1,'#d6ecfb');
+  ctx.fillStyle=bg;ctx.beginPath();ctx.ellipse(0,-s*.3,s*.42,s*.27,0,0,7);ctx.fill();
+  ctx.beginPath();ctx.moveTo(-s*.12,-s*.08);ctx.quadraticCurveTo(0,s*.08,s*.12,-s*.08);ctx.fill();
+  ctx.strokeStyle='#ffffff';ctx.lineCap='round';ctx.lineWidth=s*.13;
+  ctx.beginPath();ctx.moveTo(0,-s*.45);ctx.bezierCurveTo(s*.22,-s*.75,-s*.2,-s*.95,s*.02,-s*1.22);ctx.stroke();
+  ctx.fillStyle='#ffffff';ctx.beginPath();ctx.arc(s*.03,-s*1.28,s*.1,0,7);ctx.fill();
+  ctx.fillStyle='#ff8a3d';ctx.beginPath();ctx.moveTo(-s*.03,-s*1.34);ctx.lineTo(s*.09,-s*1.34);ctx.lineTo(s*.03,-s*1.44);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#7fd9f0';ctx.beginPath();ctx.moveTo(-s*.06,-s*1.36);ctx.lineTo(-s*.04,-s*1.47);ctx.lineTo(0,-s*1.41);ctx.lineTo(s*.03,-s*1.5);ctx.lineTo(s*.06,-s*1.41);ctx.lineTo(s*.1,-s*1.47);ctx.lineTo(s*.12,-s*1.36);ctx.closePath();ctx.fill();
+  ctx.restore();
+}
+
+/* loop */
+let last=performance.now();
+function update(dt){
+  if(state==='paused')return;
+  if(state!=='play'){P.z+=4*dt;P.x+=(Math.sin(perfNow*.6)*1.6-P.x)*dt;P.y=0;P.grounded=true;return}
+  P.speed=Math.min(18,7.5+P.z/100);
+  P.z+=P.speed*dt;
+  if(keys.ArrowLeft||keys.a||keys.A)targetX=Math.max(-3.4,targetX-7*dt);
+  if(keys.ArrowRight||keys.d||keys.D)targetX=Math.min(3.4,targetX+7*dt);
+  const vx=(targetX-P.x)*9;P.x+=vx*dt;P.tilt=Math.max(-.35,Math.min(.35,vx*.04));
+  if(buffer>0){buffer-=dt;if((P.grounded||coyote>0)&&!P.falling)doJump()}
+  P.vy-=20*dt;P.y+=P.vy*dt;if(P.flap>0)P.flap=Math.max(0,P.flap-dt*2.2);
+  const r=row(Math.round(P.z)),lane=Math.round(P.x+3),on=lane>=0&&lane<LANES&&r.mask[lane];
+  if(P.y<=0){
+    if(on&&!P.falling&&P.y>-.25){P.y=0;P.vy=0;coyote=.12;if(!P.grounded){P.grounded=true;tone(300,.08,'sine',.04)}}
+    else{if(P.grounded){P.grounded=false}coyote-=dt;if(coyote<=0)P.falling=true}
+  }else{P.grounded=false;coyote=Math.max(0,coyote-dt)}
+  if(r.gem>=0&&!r.taken&&Math.abs(r.gem-3-P.x)<.7&&P.y<1.7&&!P.falling){r.taken=true;P.gems++;tone(880,.2,'triangle',.07)}
+  P.score=Math.floor(P.z)+P.gems*25;
+  if(P.y<-5)gameOver();
+}
+function frame(now){
+  const dt=Math.min(.05,(now-last)/1000);last=now;perfNow=now/1000;
+  update(dt);
+  const portrait=H>W;
+  F=(portrait?W*1.05:Math.min(W,H*1.25)*.95);HZ=H*(portrait?.42:.36);
+  cam.x+=(P.x*.55-cam.x)*Math.min(1,dt*6);cam.y=(portrait?2.2:2.5)+Math.max(0,P.y)*.35;cam.z=P.z-(portrait?3.2:3.6);
+  drawSky(perfNow,HZ);swanDrawn=false;drawTrack();if(!swanDrawn)drawSwanAndShadow();
+  scoreEl.textContent=P.score;
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

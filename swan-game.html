@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1980s Retro Sliding Puzzle Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'VT323', monospace;
+            background-color: #88c3f7;
+            color: #3589db;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image: url('https://raw.githubusercontent.com/google-gemini/cookbook/main/images/WSlogo.png'), url('https://placehold.co/1200x800/88c3f7/3589db?text=Swan+Background');
+            background-size: cover, cover;
+            background-position: center;
+            opacity: 0.25;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .retro-title {
+            font-family: 'Press Start 2P', monospace;
+            text-shadow: 3px 3px 0px #00ffff, -3px -3px 0px #3589db;
+        }
+        .crt::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(53, 137, 219, 0.04), rgba(0, 255, 0, 0.01), rgba(53, 137, 219, 0.04));
+            z-index: 99999;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+        .neon-border {
+            box-shadow: 0 0 15px #3589db, inset 0 0 15px #3589db;
+            border: 2px solid #3589db;
+        }
+        .neon-button {
+            text-shadow: 0 0 5px #00ffff;
+            box-shadow: 0 0 10px #3589db;
+            transition: all 0.2s ease;
+        }
+        .neon-button:hover {
+            background-color: #3589db;
+            color: #ffffff;
+            box-shadow: 0 0 20px #3589db, 0 0 40px #3589db;
+        }
+        .tile {
+            transition: transform 0.15s ease, background-color 0.2s;
+            user-select: none;
+        }
+    </style>
+<style id="wsg-style">
+.wsg-nav{position:relative;z-index:100001;width:100%;box-sizing:border-box;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;
+ padding:8px 12px;background:#0b2447;color:#fff;font:600 13px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;letter-spacing:0}
+.wsg-nav .wsg-brand{font-weight:800;margin-right:4px;white-space:nowrap}
+.wsg-nav a{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 12px;border-radius:999px;text-decoration:none;color:#fff;
+ background:rgba(127,200,240,.16);border:1px solid rgba(127,200,240,.45);white-space:nowrap}
+.wsg-nav a:hover,.wsg-nav a:focus-visible{background:#18afba;border-color:#18afba;outline:none}
+.wsg-nav a[aria-current="page"]{background:#7fd9f0;color:#0b2447;border-color:#7fd9f0}
+.wsg-more{margin:18px 0 0;padding-top:14px;border-top:1px solid rgba(183,215,247,.35);text-align:center}
+.wsg-more p{margin:0 0 10px;font:700 12px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#b7d7f7}
+.wsg-more .wsg-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.wsg-more a{flex:1 1 150px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 10px;border-radius:14px;text-decoration:none;
+ background:rgba(24,105,186,.35);border:1px solid rgba(127,200,240,.5);color:#fff;font:700 15px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.wsg-more a small{font-weight:500;font-size:12px;color:#b7d7f7}
+.wsg-more a:hover,.wsg-more a:focus-visible{background:#18afba;outline:none}
+</style>
+</head>
+<body class="crt flex flex-col items-center justify-between min-h-screen p-4">
+<nav class="wsg-nav" aria-label="WebSwan Games"><span class="wsg-brand">🦢 WebSwan Games</span><a href="index.html"><span aria-hidden="true">🌤️</span>The WebSwan Sky Dream</a><a href="swan-game.html" aria-current="page"><span aria-hidden="true">🧩</span>Swan Game</a><a href="bra-spa.html"><span aria-hidden="true">🌊</span>The WebSwan Bra Spa</a></nav>
+
+    <header class="w-full max-w-md text-center my-2 bg-[#88c3f7]/80 backdrop-blur-sm p-3 rounded-xl border border-[#3589db]/40">
+        <h1 class="retro-title text-xl sm:text-2xl text-[#3589db] mb-1">NEON SLIDER '84</h1>
+        <p class="text-blue-900 text-lg tracking-wider font-bold">Slide the neon tiles into numeric order, dude!</p>
+    </header>
+
+    <div class="w-full max-w-md flex justify-between items-center bg-[#88c3f7]/90 neon-border p-3 rounded-xl my-2 text-xl">
+        <div class="flex flex-col items-center">
+            <span class="text-[#3589db] text-sm font-bold">MOVES</span>
+            <span id="move-count" class="text-blue-900 text-2xl font-bold">0</span>
+        </div>
+        <div class="flex flex-col items-center">
+            <span class="text-[#3589db] text-sm font-bold">TIME</span>
+            <span id="timer" class="text-blue-900 text-2xl font-bold">00:00</span>
+        </div>
+        <div class="flex gap-2">
+            <button id="shuffle-btn" class="neon-button bg-black text-[#3589db] px-3 py-1 rounded text-lg font-bold uppercase cursor-pointer">Shuffle</button>
+            <button id="reset-btn" class="neon-button bg-black text-[#3589db] px-3 py-1 rounded text-lg font-bold uppercase cursor-pointer">Reset</button>
+        </div>
+    </div>
+
+    <main class="w-full max-w-md flex-grow flex items-center justify-center my-2">
+        <div id="board" class="w-80 h-80 sm:w-96 sm:h-96 bg-[#88c3f7]/90 neon-border p-3 rounded-2xl grid grid-cols-4 gap-2 relative">
+            <!-- Tiles populated dynamically -->
+        </div>
+    </main>
+
+    <footer class="w-full max-w-md text-center text-blue-900 text-sm my-1 bg-[#88c3f7]/80 p-2 rounded-lg border border-[#3589db]/50 font-bold">
+        <p>🕹️ <strong>CONTROLS:</strong> Tap or click any tile adjacent to the empty slot to slide it!</p>
+    </footer>
+
+    <div id="msg-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-[#88c3f7] neon-border p-6 rounded-2xl max-w-sm w-full text-center shadow-2xl">
+            <div class="text-4xl mb-3">🌟🕹️🌟</div>
+            <h2 id="modal-title" class="retro-title text-xl text-yellow-300 mb-3">TOTAL RADICAL!</h2>
+            <p id="modal-text" class="text-blue-950 text-xl mb-6 font-bold">You solved the puzzle in 0 moves and 00:00!</p>
+            <button id="modal-close" class="neon-button bg-black text-[#3589db] px-6 py-2 rounded-xl text-xl font-bold w-full cursor-pointer">PLAY AGAIN</button>
+        </div>
+    </div>
+
+    <script>
+        const boardEl = document.getElementById('board');
+        const moveCountEl = document.getElementById('move-count');
+        const timerEl = document.getElementById('timer');
+        const shuffleBtn = document.getElementById('shuffle-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const msgModal = document.getElementById('msg-modal');
+        const modalText = document.getElementById('modal-text');
+        const modalClose = document.getElementById('modal-close');
+
+        let tiles = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, ""];
+        let moves = 0;
+        let seconds = 0;
+        let timerInterval = null;
+        let gameStarted = false;
+        let isWon = false;
+
+        function startTimer() {
+            if (timerInterval) return;
+            gameStarted = true;
+            seconds = 0;
+            timerInterval = setInterval(() => {
+                seconds++;
+                const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+                const secs = (seconds % 60).toString().padStart(2, '0');
+                timerEl.textContent = `${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        function renderBoard() {
+            boardEl.innerHTML = '';
+            tiles.forEach((tileVal, index) => {
+                const cell = document.createElement('div');
+                cell.className = "tile flex items-center justify-center rounded-xl text-3xl sm:text-4xl font-bold cursor-pointer select-none";
+                
+                if (tileVal === "") {
+                    cell.classList.add('bg-black/20', 'border', 'border-dashed', 'border-[#3589db]/50');
+                } else {
+                    cell.classList.add('bg-gradient-to-br', 'from-blue-900', 'to-[#3589db]', 'text-cyan-200', 'neon-border');
+                    cell.textContent = tileVal;
+                    cell.addEventListener('click', () => handleTileClick(index));
+                }
+                boardEl.appendChild(cell);
+            });
+        }
+
+        function handleTileClick(index) {
+            if (isWon) return;
+            const emptyIndex = tiles.indexOf("");
+            if (isAdjacent(index, emptyIndex)) {
+                if (!gameStarted) startTimer();
+                tiles[emptyIndex] = tiles[index];
+                tiles[index] = "";
+                moves++;
+                moveCountEl.textContent = moves;
+                renderBoard();
+                checkWin();
+            }
+        }
+
+        function isAdjacent(i1, i2) {
+            const r1 = Math.floor(i1 / 4), c1 = i1 % 4;
+            const r2 = Math.floor(i2 / 4), c2 = i2 % 4;
+            return Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1;
+        }
+
+        function shuffle() {
+            stopTimer();
+            gameStarted = false;
+            isWon = false;
+            moves = 0;
+            seconds = 0;
+            moveCountEl.textContent = '0';
+            timerEl.textContent = '00:00';
+            msgModal.classList.add('hidden');
+            msgModal.classList.remove('flex');
+
+            tiles = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, ""];
+            let emptyIdx = 15;
+            
+            for (let i = 0; i < 150; i++) {
+                const validMoves = [];
+                const r = Math.floor(emptyIdx / 4);
+                const c = emptyIdx % 4;
+                if (r > 0) validMoves.push(emptyIdx - 4);
+                if (r < 3) validMoves.push(emptyIdx + 4);
+                if (c > 0) validMoves.push(emptyIdx - 1);
+                if (c < 3) validMoves.push(emptyIdx + 1);
+
+                const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+                tiles[emptyIdx] = tiles[randomMove];
+                tiles[randomMove] = "";
+                emptyIdx = randomMove;
+            }
+            renderBoard();
+        }
+
+        function resetPuzzle() {
+            stopTimer();
+            gameStarted = false;
+            isWon = false;
+            moves = 0;
+            seconds = 0;
+            moveCountEl.textContent = '0';
+            timerEl.textContent = '00:00';
+            msgModal.classList.add('hidden');
+            msgModal.classList.remove('flex');
+            tiles = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, ""];
+            renderBoard();
+        }
+
+        function checkWin() {
+            const winningOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, ""];
+            const won = tiles.every((val, idx) => val === winningOrder[idx]);
+            if (won) {
+                isWon = true;
+                stopTimer();
+                const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+                const secs = (seconds % 60).toString().padStart(2, '0');
+                modalText.textContent = `You solved the neon puzzle in ${moves} moves and ${mins}:${secs}, dude!`;
+                msgModal.classList.remove('hidden');
+                msgModal.classList.add('flex');
+            }
+        }
+
+        shuffleBtn.addEventListener('click', shuffle);
+        resetBtn.addEventListener('click', resetPuzzle);
+        modalClose.addEventListener('click', resetPuzzle);
+
+        window.onload = () => {
+            resetPuzzle();
+        };
+    </script>
+</body>
+</html>
